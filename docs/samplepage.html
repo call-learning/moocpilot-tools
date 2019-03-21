@@ -1,0 +1,26 @@
+<p>Add the content you want students to see on this page.</p>
+<div id="root"></div>
+<script>global._babelPolyfill = false;</script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+<script type="text/javascript" src="http://moocpilotv2-tools.local/moocpilot.tools.js"></script>
+<script type="text/javascript" src="http://moocpilotv2-analyticslib.local/style.js"></script>
+<script type="text/javascript" src="http://moocpilotv2-analyticslib.local/analyticscomponents.js"></script>
+<script>
+    let curl = new URL(window.location.href);
+    let callback = (reportsdata) => {
+        ReactDOM.render(
+            React.createElement(analyticscomponents.MPCollectionChart, {
+                grades: reportsdata.grades,
+                students: reportsdata.students,
+                collections: reportsdata.collections,
+                activities: reportsdata.activities,
+                caption: "Basic Generation Chart"
+            }, null),
+            document.getElementById('root')
+        );
+    };
+    window.moocpilottools.listReportDownloads(curl.protocol + '//' + curl.host,
+        window.moocpilottools.getCourseIDFromURL(window.location.href))
+        .then(allreports => window.moocpilottools.parseGradeReports(allreports, callback));
+</script>

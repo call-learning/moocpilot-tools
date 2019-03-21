@@ -1,19 +1,49 @@
 {
-  "name": "moocpilotv2-tools",
+  "name": "@moocpilot/tools",
   "version": "0.1.0",
-  "private": true,
+  "description": "Tools for MOOC Pilot Analytics.",
+  "main": "dist/tools.js",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">11.3.0"
+  },
+  "files": [
+    "/dist",
+    "/src"
+  ],
   "dependencies": {
-    "d3-dsv": "^1.1.1",
     "glob": "^7.1.3",
     "path": "^0.12.7",
-    "strip-bom-stream": "^3.0.0",
-    "casual": "^1.6.0",
-    "csv": "^5.1.1"
+    "axios": "^0.18.0",
+    "papaparse": "^4.6.3",
+    "babel-polyfill": "^6.26.0",
+    "commander": "^2.20.0",
+    "casual": "^1.6.0"
   },
-  "main": "src/processreports.js",
-  "devDependencies": {},
-  "bin": {
-    "processreports": "src/processreports.js",
-    "anonymisereport": "src/anonymisereport.js"
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/cli": "^7.4.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.1",
+    "jest": "^24.7.1",
+    "webpack-merge": "^4.1.1",
+    "source-map-loader": "^0.2.4",
+    "clean-webpack-plugin": "^1.0.0",
+    "babel-jest": "^24.8.0",
+    "babel-eslint": "^8.2.2",
+    "eslint-config-edx": "^4.0.3",
+    "fs": "latest",
+    "strip-bom-stream": "^4.0.0"
+  },
+  "scripts": {
+    "processreports": "babel-node src/cli/processreports.js",
+    "anonymisereports": "babel-node src/cli/anonymisereports.js",
+    "build": "BABEL_ENV=production webpack --mode production --config=webpack.config.js --display-modules",
+    "test": "jest",
+    "precommit": "npm run lint",
+    "lint": "eslint --ext .js --ext .jsx ."
   }
 }
