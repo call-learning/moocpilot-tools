@@ -7,6 +7,9 @@
 // See https://www.papaparse.com/  for more info
 import Papa from 'papaparse';
 
+
+// Default cohort name
+const DEFAULT_COHORT = { id: 0, name: 'Default' };
 /**
  *  Parse one line of a CSV File
  * @param currentcollectionid : the current collection identifier
@@ -36,11 +39,21 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
     students: [],
     grades: [],
     activities: [],
-    cohorts: [],
+    cohorts: [DEFAULT_COHORT],
   };
   // Step 1: add the student if it does not exist
 
-  const currentcohort = rowdata['Cohort Name'];
+  const currentcohortname = rowdata['Cohort Name'];
+
+  // Add the new cohort if it does not exist
+  let currentcohort = DEFAULT_COHORT;
+  if (currentcohortname !== null && currentcohortname !== DEFAULT_COHORT.name) {
+    const existingcohort = currentdata.cohorts.find(el => (el.name === currentcohortname));
+    if (!existingcohort) {
+      currentcohort = { id: currentdata.cohorts.length, name: currentcohortname };
+      currentdata.cohorts.push(currentcohort);
+    }
+  }
 
   let student = currentdata.students.find(el => (el.id === rowdata.id || el.id === rowdata['Student ID']));
   if (student === undefined) {
@@ -49,7 +62,7 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
     student = {
       id: rowdata.id ? rowdata.id : rowdata['Student ID'],
       username: rowdata.username ? rowdata.username : rowdata.Username,
-      cohorts: currentcohort ? [currentcohort] : [],
+      cohorts: [currentcohort.id],
       firstactivecollection: -1, // This means we know the student is here but we will set the
       // the final value once the student will have done at least one exercise/activity
     };
@@ -76,7 +89,7 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
         studentid: student.id,
         activityid: activity.id,
         value: Number.parseFloat(rowdata[activity.name]),
-        cohort: currentcohort,
+        cohort: currentcohort.id,
         collectionid: currentcollectionid,
       };
 
@@ -87,8 +100,8 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
           student.firstactivecollection = currentcollectionid; // This is the first time we notice
           // the student is active
           // Replace it in the array
-          if (currentcohort && !student.cohorts.includes(currentcohort)) {
-            student.cohorts.push(currentcohort);
+          if (currentcohort && student.cohorts.indexOf(currentcohort.id) === -1) {
+            student.cohorts.push(currentcohort.id);
           }
           currentdata.students = currentdata.students.map(s =>
             ((s.id === student.id) ? student : s));
@@ -125,7 +138,7 @@ export function parseGradeReports(reportslist) {
     students: [],
     grades: [],
     activities: [],
-    cohorts: [],
+    cohorts: [DEFAULT_COHORT],
   };
   const promiselist = reportslist.map(reportdata => new Promise((resolve, reject) => {
     const currentcollection = getCollectionFromFilename(reportdata.name);
