@@ -6,7 +6,7 @@
 
 // See https://www.papaparse.com/  for more info
 import Papa from 'papaparse';
-
+import fs from 'fs';
 
 // Default cohort name
 const DEFAULT_COHORT = { id: 0, name: 'Default' };
@@ -113,8 +113,11 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
   return currentdata;
 }
 
-export function getCollectionFromFilename(fname) {
-  const result = fname.match(/.*_grade_report_(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})\.csv/);
+export function getCollectionFromFilename(furl) {
+  const result = furl.match(/.*_grade_report_(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})\.csv/);
+  if (result === null) {
+    return null;
+  }
   result.shift();
   const [years, months, days, hours, minutes] = result;
   return {
@@ -122,7 +125,7 @@ export function getCollectionFromFilename(fname) {
     // id is concatenation of all numbers
     timestamp: Date.UTC(years, months - 1, days, hours, minutes),
     // Unix Timestamp, watch for months (0 based)
-    filename: fname,
+    url: furl,
   };
 }
 
@@ -132,24 +135,23 @@ export function getCollectionFromFilename(fname) {
  * @param reportslist
  * @returns {Promise<[any, any, any, any, any, any, any, any, any, any]>}
  */
-export function parseGradeReports(reportslist) {
+export function parseGradeReports(collections) {
   let currentdata = {
-    collections: [],
+    collections,
     students: [],
     grades: [],
     activities: [],
     cohorts: [DEFAULT_COHORT],
   };
-  const promiselist = reportslist.map(reportdata => new Promise((resolve, reject) => {
-    const currentcollection = getCollectionFromFilename(reportdata.name);
-    currentdata.collections.push(currentcollection);
-    Papa.parse(reportdata.url ? reportdata.url : reportdata.filestream, {
+  const promiselist = currentdata.collections.map(coll => new Promise((resolve, reject) => {
+    const filetoparse = coll.url.startsWith('file:///') ? fs.createReadStream((new URL(coll.url)).pathname) : coll.url;
+    Papa.parse(filetoparse, {
       download: true,
       header: true,
       dynamicTyping: true,
       step: (results) => {
         if (!results.errors.length && results.data.length) {
-          currentdata = parseCSVStep(currentcollection.id, results.data[0], currentdata);
+          currentdata = parseCSVStep(coll.id, results.data[0], currentdata);
         }
       },
       complete: () => {

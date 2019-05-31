@@ -12,5 +12,5 @@ test('Read a report list from given URL/folder', async () => {
   // if we set the field filestream, then it will take over
   const reportlistpromise = await getGradeReportsFromLocalFolder('./tests/sampledata/gradereports/');
   expect(reportlistpromise.length).toBe(13);
-  expect(reportlistpromise[0].name).toBe('anonymised-MinesTelecom_04003_session07_grade_report_2018-09-17-2117.csv');
+  expect(reportlistpromise[0].url).toBe('file:////home/laurentd/development/moocpilotv2/moocpilotv2-tools/tests/sampledata/gradereports/anonymised-MinesTelecom_04003_session07_grade_report_2018-09-17-2117.csv');
 });

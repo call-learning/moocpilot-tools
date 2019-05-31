@@ -2,11 +2,11 @@ import fs from 'fs';
 import { parseCSVStep, getCollectionFromFilename, parseGradeReports } from './parseutils';
 
 test('transform filename into collection data', () => {
-  const filename = 'anonymised-MinesTelecom_04003_session07_grade_report_2018-09-17-2117.csv';
+  const filename = `file:///${process.cwd()}/tests/sampledata/gradereports/anonymised-MinesTelecom_04003_session07_grade_report_2018-09-17-2117.csv`;
   const col = getCollectionFromFilename(filename);
   expect(col.id).toBe(201809172117);
   expect(col.timestamp).toBe(1537219020000);
-  expect(col.filename).toBe(filename);
+  expect(col.url).toBe(filename);
 });
 
 test('Transform a row of data, old edX Format', () => {
@@ -177,13 +177,10 @@ test('Check cohort transformation', () => {
 test('Read a report from a given URL/folder and return an object', () => {
   // We normally accept an URL for the url of the file but if we set
   // the field filestream, then it will take over
-  const reportlist = [
-    {
-      filestream: fs.createReadStream('./tests/sampledata/gradereports/anonymised-MinesTelecom_04003_session07_grade_report_2018-10-24-2100.csv'),
-      name: 'anonymised-MinesTelecom_04003_session07_grade_report_2018-10-24-2100.csv',
-    },
+  const collections = [
+    getCollectionFromFilename(`file:///${process.cwd()}/tests/sampledata/gradereports/anonymised-MinesTelecom_04003_session07_grade_report_2018-10-24-2100.csv`),
   ];
-  return parseGradeReports(reportlist).then((allgrades) => {
+  return parseGradeReports(collections).then((allgrades) => {
     expect(allgrades).toHaveProperty('collections');
     expect(allgrades).toHaveProperty('students');
     expect(allgrades).toHaveProperty('grades');

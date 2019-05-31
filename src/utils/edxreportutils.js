@@ -6,7 +6,7 @@
 import axios from 'axios';
 import glob from 'glob';
 import path from 'path';
-import fs from 'fs';
+import { getCollectionFromFilename } from './parseutils';
 
 /**
  * Get all reports as a json list through the course dashboard API
@@ -28,7 +28,8 @@ export async function getGradeReportsFromAPI(baseurl, courseId) {
       },
     );
     if (response.status === 200) {
-      return response.data.downloads;
+      const collections = response.data.downloads.map(dld => getCollectionFromFilename(dld.url));
+      return collections.filter(c => c !== null);
     }
   } catch (error) {
     console.error(error);
@@ -40,13 +41,8 @@ export function getGradeReportsFromLocalFolder(filepath) {
   return new Promise((resolve) => {
     glob(
       path.join(filepath, '*.csv'),
-      {},
-      (err, matches) => {
-        resolve(matches.map(fpath => ({
-          filestream: fs.createReadStream(fpath),
-          name: path.basename(fpath),
-        })));
-      },
+      { absolute: true },
+      (err, matches) => resolve(matches.map(fpath => getCollectionFromFilename(`file:///${fpath}`))),
     );
   });
 }
