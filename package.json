@@ -21,13 +21,14 @@
     "casual": "^1.6.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/cli": "^7.4.4",
-    "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.4.4",
-    "babel-loader": "^8.0.5",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.1",
+    "@babel/core": "^7.6.0",
+    "@babel/cli": "^7.6.0",
+    "@babel/node": "^7.6.1",
+    "@babel/runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
     "jest": "^24.7.1",
     "webpack-merge": "^4.1.1",
     "source-map-loader": "^0.2.4",
@@ -36,13 +37,16 @@
     "babel-eslint": "^8.2.2",
     "eslint-config-edx": "^4.0.3",
     "fs": "latest",
-    "strip-bom-stream": "^4.0.0"
+    "strip-bom-stream": "^4.0.0",
+    "lodash": "^4.17.15",
+    "benchmark": "^2.1.4"
   },
   "scripts": {
     "processreports": "babel-node src/cli/processreports.js",
     "anonymisereports": "babel-node src/cli/anonymisereports.js",
     "build": "BABEL_ENV=production webpack --mode production --config=webpack.config.js --display-modules",
     "test": "jest",
+    "perftest": "babel-node tests/tools-benchmark.js",
     "precommit": "npm run lint",
     "lint": "eslint --ext .js --ext .jsx ."
   }
