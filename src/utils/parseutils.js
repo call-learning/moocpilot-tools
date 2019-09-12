@@ -63,6 +63,7 @@ export function parseCSVStep(currentcollectionid, rowdata, cdata, ngrow) {
       id: rowdata.id ? rowdata.id : rowdata['Student ID'],
       username: rowdata.username ? rowdata.username : rowdata.Username,
       cohorts: [currentcohort.id],
+      firsttimeseen: currentcollectionid,
       firstactivecollection: -1, // This means we know the student is here but we will set the
       // the final value once the student will have done at least one exercise/activity
     };
