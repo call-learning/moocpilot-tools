@@ -38,7 +38,7 @@
     "eslint-config-edx": "^4.0.3",
     "fs": "latest",
     "strip-bom-stream": "^4.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "benchmark": "^2.1.4"
   },
   "scripts": {
